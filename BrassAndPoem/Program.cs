@@ -106,15 +106,32 @@ Please enter the number of the product you would like to delete");
             break;
 
         case 3:
+            Console.WriteLine(@"
+*********************
+*** Add A Product ***
+*********************
+    ");
 
+            AddProduct(products, productTypes);
+
+            pause();
             break;
 
         case 4:
+            Console.WriteLine(@"
+************************
+*** Update A Product ***
+************************
+    ");
 
+            UpdateProduct(products, productTypes);
+
+            pause();
             break;
 
         case 5:
             Console.WriteLine("Exiting... Bye Bye!");
+
             on = false;
             break;
 
@@ -163,12 +180,99 @@ void DeleteProduct(List<Product> products, List<ProductType> productTypes)
 
 void AddProduct(List<Product> products, List<ProductType> productTypes)
 {
-    throw new NotImplementedException();
+    Console.WriteLine("What is the name of your product? (A-Z ONLY)");
+    string name = Console.ReadLine().Trim();
+
+    Console.WriteLine($@"
+What is the price of your {name}? (DO NOT ADD A DOLLAR SIGN)");
+    decimal price = decimal.Parse(Console.ReadLine().Trim());
+
+    Console.WriteLine(@"
+*********************
+*** Product Types ***
+*********************
+    ");
+
+    foreach (ProductType type in productTypes)
+    {
+        Console.WriteLine($"{type.Id}. {type.Title}");
+    }
+
+    Console.WriteLine($@"
+Please enter the number of the type that matches your {name}");
+
+    int typeId = int.Parse(Console.ReadLine().Trim());
+
+    products.Add(
+        new Product
+        {
+            Name = name,
+            Price = price,
+            ProductTypeId = typeId,
+        }
+    );
+
+    Console.WriteLine($@"
+{name} has been succsesfully added to the inventory");
+
 }
 
 void UpdateProduct(List<Product> products, List<ProductType> productTypes)
 {
-    throw new NotImplementedException();
+    Console.WriteLine("Which product would you like to update?");
+
+    Console.WriteLine(@"
+********************
+*** All Products ***
+********************
+    ");
+    DisplayAllProducts(products, productTypes);
+
+    Console.WriteLine(@"
+Please enter the number of the product you want to update");
+    int productIndex = int.Parse(Console.ReadLine().Trim()) - 1;
+
+    Product productToUpdate = products[productIndex];
+
+    Console.WriteLine(@$"
+What would you like to rename {productToUpdate.Name} to? (PRESS ENTER TO LEAVE UNCHANGED)
+");
+    string name = Console.ReadLine().Trim();
+
+    if (!string.IsNullOrEmpty(name)) {
+        productToUpdate.Name = name;
+    };
+
+    Console.WriteLine(@$"
+What would you like to change the price of {productToUpdate.Name} to? (Current Price ${productToUpdate.Price}) (PRESS ENTER TO LEAVE UNCHANGED)
+");
+    string price = Console.ReadLine().Trim();
+
+    if (!string.IsNullOrEmpty(price)) {
+        productToUpdate.Price = decimal.Parse(price);
+    };
+
+    Console.WriteLine(@"
+*********************
+*** Product Types ***
+*********************
+    ");
+
+    foreach (ProductType productType in productTypes)
+    {
+        Console.WriteLine($"{productType.Id}. {productType.Title}");
+    }
+
+    Console.WriteLine(@$"
+What would you like to change the type of {productToUpdate.Name} to? (Current Type is {productToUpdate.ProductTypeId}) (PRESS ENTER TO LEAVE UNCHANGED)
+");
+   string type = Console.ReadLine().Trim();
+
+    if (!string.IsNullOrEmpty(type)) {
+        productToUpdate.ProductTypeId = int.Parse(type);
+    };
+
+    Console.WriteLine("Your product has been updated successfully");
 }
 
 // don't move or change this!

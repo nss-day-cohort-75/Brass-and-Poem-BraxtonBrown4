@@ -63,81 +63,56 @@ Boolean on = true;
 
 while (on)
 {
-    Console.WriteLine(@"
-************
-*** Menu ***
-************
-");
-
     DisplayMenu();
-
-    Console.WriteLine("Please enter a number to select an option");
-
-    int choice = int.Parse(Console.ReadLine().Trim());
-
-    switch (choice)
+    try
     {
-        case 1:
-            Console.WriteLine(@"
-********************
-*** All Products ***
-********************
-    ");
-            DisplayAllProducts(products, productTypes);
+        Console.WriteLine("Please enter a number to select an option");
 
-            pause();
-            break;
+        int choice = int.Parse(Console.ReadLine().Trim());
 
-        case 2:
-            Console.WriteLine(@"
-************************
-*** Delete By Number ***
-************************
-    ");
+        switch (choice)
+        {
+            case 1:
+                DisplayAllProducts(products, productTypes);
 
-            DisplayAllProducts(products, productTypes);
+                pause();
+                break;
 
-            Console.WriteLine(@"
-Please enter the number of the product you would like to delete");
+            case 2:
+                DeleteProduct(products, productTypes);
 
-            DeleteProduct(products, productTypes);
+                pause();
+                break;
 
-            pause();
-            break;
+            case 3:
+                AddProduct(products, productTypes);
 
-        case 3:
-            Console.WriteLine(@"
-*********************
-*** Add A Product ***
-*********************
-    ");
+                pause();
+                break;
 
-            AddProduct(products, productTypes);
+            case 4:
+                UpdateProduct(products, productTypes);
 
-            pause();
-            break;
+                pause();
+                break;
 
-        case 4:
-            Console.WriteLine(@"
-************************
-*** Update A Product ***
-************************
-    ");
+            case 5:
+                Console.WriteLine(@"
+Exiting... Bye Bye!
+            ");
 
-            UpdateProduct(products, productTypes);
-
-            pause();
-            break;
-
-        case 5:
-            Console.WriteLine("Exiting... Bye Bye!");
-
-            on = false;
-            break;
-
-        default:
-            Console.WriteLine("Please select a valid integer.");
-            break;
+                on = false;
+                break;
+        }
+    }
+    catch
+    {
+        Console.WriteLine(@"
+******************************
+******* FAILED ATTEMPT *******
+*** SELECT A VALID INTEGER ***
+******************************
+");
     }
 
 }
@@ -153,6 +128,10 @@ press enter to continue
 void DisplayMenu()
 {
     Console.WriteLine(@"
+************
+*** Menu ***
+************
+
 1. Display all products
 2. Delete a product
 3. Add a new product
@@ -161,32 +140,8 @@ void DisplayMenu()
     ");
 }
 
-void DisplayAllProducts(List<Product> products, List<ProductType> productTypes)
+void DisplayAllTypes(List<Product> products, List<ProductType> productTypes)
 {
-    foreach (Product product in products)
-    {
-        ProductType type = productTypes.FirstOrDefault(productType => productType.Id == product.ProductTypeId);
-
-        Console.WriteLine($"{products.IndexOf(product) + 1}. {type.Title} {product.Name} - ${product.Price}");
-    }
-}
-
-void DeleteProduct(List<Product> products, List<ProductType> productTypes)
-{
-    int productIndex = int.Parse(Console.ReadLine().Trim()) - 1;
-
-    products.RemoveAt(productIndex);
-}
-
-void AddProduct(List<Product> products, List<ProductType> productTypes)
-{
-    Console.WriteLine("What is the name of your product? (A-Z ONLY)");
-    string name = Console.ReadLine().Trim();
-
-    Console.WriteLine($@"
-What is the price of your {name}? (DO NOT ADD A DOLLAR SIGN)");
-    decimal price = decimal.Parse(Console.ReadLine().Trim());
-
     Console.WriteLine(@"
 *********************
 *** Product Types ***
@@ -197,82 +152,173 @@ What is the price of your {name}? (DO NOT ADD A DOLLAR SIGN)");
     {
         Console.WriteLine($"{type.Id}. {type.Title}");
     }
-
-    Console.WriteLine($@"
-Please enter the number of the type that matches your {name}");
-
-    int typeId = int.Parse(Console.ReadLine().Trim());
-
-    products.Add(
-        new Product
-        {
-            Name = name,
-            Price = price,
-            ProductTypeId = typeId,
-        }
-    );
-
-    Console.WriteLine($@"
-{name} has been succsesfully added to the inventory");
-
 }
 
-void UpdateProduct(List<Product> products, List<ProductType> productTypes)
+void DisplayAllProducts(List<Product> products, List<ProductType> productTypes)
 {
-    Console.WriteLine("Which product would you like to update?");
-
     Console.WriteLine(@"
 ********************
 *** All Products ***
 ********************
     ");
-    DisplayAllProducts(products, productTypes);
 
-    Console.WriteLine(@"
-Please enter the number of the product you want to update");
-    int productIndex = int.Parse(Console.ReadLine().Trim()) - 1;
+    foreach (Product product in products)
+    {
+        ProductType type = productTypes.FirstOrDefault(productType => productType.Id == product.ProductTypeId);
 
-    Product productToUpdate = products[productIndex];
+        Console.WriteLine($"{products.IndexOf(product) + 1}. {type.Title} {product.Name} - ${product.Price}");
+    }
+}
 
-    Console.WriteLine(@$"
-What would you like to rename {productToUpdate.Name} to? (PRESS ENTER TO LEAVE UNCHANGED)
+void DeleteProduct(List<Product> products, List<ProductType> productTypes)
+{
+
+    try
+    {
+        Console.WriteLine(@"
+************************
+*** Delete By Number ***
+************************
+    ");
+
+        DisplayAllProducts(products, productTypes);
+
+        Console.WriteLine(@"
+Please enter the number of the product you would like to delete");
+
+        int productIndex = int.Parse(Console.ReadLine().Trim()) - 1;
+
+        products.RemoveAt(productIndex);
+    }
+    catch
+    {
+        Console.WriteLine(@"
+******************************
+******* FAILED ATTEMPT *******
+*** SELECT A VALID INTEGER ***
+******************************
 ");
-    string name = Console.ReadLine().Trim();
+        DeleteProduct(products, productTypes);
+    }
+}
 
-    if (!string.IsNullOrEmpty(name)) {
-        productToUpdate.Name = name;
-    };
-
-    Console.WriteLine(@$"
-What would you like to change the price of {productToUpdate.Name} to? (Current Price ${productToUpdate.Price}) (PRESS ENTER TO LEAVE UNCHANGED)
-");
-    string price = Console.ReadLine().Trim();
-
-    if (!string.IsNullOrEmpty(price)) {
-        productToUpdate.Price = decimal.Parse(price);
-    };
-
-    Console.WriteLine(@"
+void AddProduct(List<Product> products, List<ProductType> productTypes)
+{
+    try
+    {
+        Console.WriteLine(@"
 *********************
-*** Product Types ***
+*** Add A Product ***
 *********************
     ");
 
-    foreach (ProductType productType in productTypes)
+        Console.WriteLine("What is the name of your product? (A-Z ONLY)");
+        string name = Console.ReadLine().Trim();
+
+        Console.WriteLine($@"
+What is the price of your {name}? (DO NOT ADD A DOLLAR SIGN)");
+        decimal price = decimal.Parse(Console.ReadLine().Trim());
+
+        DisplayAllTypes(products, productTypes);
+
+        Console.WriteLine($@"
+Please enter the number of the type that matches your {name}");
+
+        int typeId = int.Parse(Console.ReadLine().Trim());
+
+        products.Add(
+            new Product
+            {
+                Name = name,
+                Price = price,
+                ProductTypeId = typeId,
+            }
+        );
+
+        Console.WriteLine($@"
+{name} has been succsesfully added to the inventory");
+    }
+    catch
     {
-        Console.WriteLine($"{productType.Id}. {productType.Title}");
+        Console.WriteLine(@"
+******************************
+******* FAILED ATTEMPT *******
+*** SELECT A VALID INTEGER ***
+******************************
+");
+        AddProduct(products, productTypes);
     }
 
-    Console.WriteLine(@$"
+
+}
+
+void UpdateProduct(List<Product> products, List<ProductType> productTypes)
+{
+    try
+    {
+        Console.WriteLine(@"
+************************
+*** Update A Product ***
+************************
+    ");
+
+        Console.WriteLine("Which product would you like to update?");
+
+        DisplayAllProducts(products, productTypes);
+
+        Console.WriteLine(@"
+Please enter the number of the product you want to update");
+        int productIndex = int.Parse(Console.ReadLine().Trim()) - 1;
+
+        Product productToUpdate = products[productIndex];
+
+        Console.WriteLine(@$"
+What would you like to rename {productToUpdate.Name} to? (PRESS ENTER TO LEAVE UNCHANGED)
+");
+        string name = Console.ReadLine().Trim();
+
+        if (!string.IsNullOrEmpty(name))
+        {
+            productToUpdate.Name = name;
+        }
+    ;
+
+        Console.WriteLine(@$"
+What would you like to change the price of {productToUpdate.Name} to? (Current Price ${productToUpdate.Price}) (PRESS ENTER TO LEAVE UNCHANGED)
+");
+        string price = Console.ReadLine().Trim();
+
+        if (!string.IsNullOrEmpty(price))
+        {
+            productToUpdate.Price = decimal.Parse(price);
+        }
+    ;
+
+        DisplayAllTypes(products, productTypes);
+
+        Console.WriteLine(@$"
 What would you like to change the type of {productToUpdate.Name} to? (Current Type is {productToUpdate.ProductTypeId}) (PRESS ENTER TO LEAVE UNCHANGED)
 ");
-   string type = Console.ReadLine().Trim();
+        string type = Console.ReadLine().Trim();
 
-    if (!string.IsNullOrEmpty(type)) {
-        productToUpdate.ProductTypeId = int.Parse(type);
-    };
+        if (!string.IsNullOrEmpty(type))
+        {
+            productToUpdate.ProductTypeId = int.Parse(type);
+        }
+    ;
 
-    Console.WriteLine("Your product has been updated successfully");
+        Console.WriteLine("Your product has been updated successfully");
+    }
+    catch
+    {
+        Console.WriteLine(@"
+******************************
+******* FAILED ATTEMPT *******
+*** SELECT A VALID INTEGER ***
+******************************
+");
+        UpdateProduct(products, productTypes);
+    }
 }
 
 // don't move or change this!
